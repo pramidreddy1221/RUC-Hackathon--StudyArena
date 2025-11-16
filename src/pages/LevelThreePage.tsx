@@ -76,7 +76,7 @@ export function LevelThreePage() {
   const handleComplete = async () => {
     try {
       setIsLoading(true)
-      await callNextLevelWebhook(3)
+  
       // Navigate to home after completing level 3
       navigate("/complete", {
         state: {
