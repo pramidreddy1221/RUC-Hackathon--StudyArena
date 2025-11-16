@@ -45,8 +45,17 @@ export function LevelOnePage() {
   const handleComplete = async () => {
     try {
       setIsLoading(true)
-      await callNextLevelWebhook(2)
-      navigate('/level-2')
+      const result = await callNextLevelWebhook(2)
+      
+      if (result.success && result.gameData && result.gameData.length > 0) {
+        // Navigate to level 2 with the game data from webhook
+        console.log('Navigating to level 2 with game data:', result.gameData)
+        navigate('/level-2', { state: { gameData: result.gameData } })
+      } else {
+        // If no game data, just navigate to level 2 (user might need to upload PDF)
+        console.warn('No game data in webhook response, navigating to level 2 without data')
+        navigate('/level-2')
+      }
     } catch (error) {
       console.error('Error calling next level webhook:', error)
       // Still navigate even if webhook fails

@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Loading } from '@/components/ui/loading'
 import { extractTextFromPDF } from '@/services/pdfExtractor'
 import { sendTextToN8N } from '@/services/n8nService'
-import { GameContentItem, SQLFixItem } from '@/types/game'
+import { GameContentItem, SQLFixItem, SQLLogicItem, SQLLevelThreeItem } from '@/types/game'
 
 interface PDFUploadProps {
   onContentReceived: (content: GameContentItem[]) => void
@@ -52,26 +52,42 @@ export function PDFUpload({ onContentReceived }: PDFUploadProps) {
       if (result.success && result.content && result.content.length > 0) {
         console.log('Successfully received content from n8n:', result.content)
         
-        // Check if content is SQL Level 1 game
+        // Check if content is SQL game (Level 1 or Level 2)
         const firstItem = result.content[0]
         
-        // Check if it's a GameContentItem with sql-level-1 type
-        const isSQLGame = 
+        // Check if it's a GameContentItem with sql-level-1 or sql-level-2 type
+        const isSQLLevel1 = 
           firstItem &&
           typeof firstItem === 'object' &&
           'type' in firstItem &&
           (firstItem.type === 'sql-level-1' || 
            (firstItem as any).data?.type === 'sql-level-1')
         
-        // Check if it's a direct SQLFixItem structure
+        const isSQLLevel2 = 
+          firstItem &&
+          typeof firstItem === 'object' &&
+          'type' in firstItem &&
+          (firstItem.type === 'sql-level-2' || 
+           (firstItem as any).data?.type === 'sql-level-2')
+        
+        const isSQLLevel3 = 
+          firstItem &&
+          typeof firstItem === 'object' &&
+          'type' in firstItem &&
+          (firstItem.type === 'sql-level-3' || 
+           (firstItem as any).data?.type === 'sql-level-3')
+        
+        // Check if it's a direct SQL item structure (without explicit type)
         const isDirectSQLItem =
           firstItem &&
           typeof firstItem === 'object' &&
           'id' in firstItem &&
           'task' in firstItem &&
-          'answer' in firstItem
+          'answer' in firstItem &&
+          !isSQLLevel3
         
-        if (isSQLGame || isDirectSQLItem) {
+        // Handle SQL Level 1
+        if (isSQLLevel1 || (isDirectSQLItem && !isSQLLevel2)) {
           // Extract SQL items - handle both GameContentItem format and direct format
           const sqlItems: SQLFixItem[] = result.content.map((item: any) => {
             // If it's a GameContentItem with data property
@@ -95,6 +111,64 @@ export function PDFUpload({ onContentReceived }: PDFUploadProps) {
           if (sqlItems.length > 0) {
             console.log('Detected SQL Level 1 content, routing to level-1 page')
             navigate('/level-1', { state: { gameData: sqlItems } })
+            return
+          }
+        }
+        
+        // Handle SQL Level 2
+        if (isSQLLevel2) {
+          // Extract SQL items - handle both GameContentItem format and direct format
+          const sqlItems: SQLLogicItem[] = result.content.map((item: any) => {
+            // If it's a GameContentItem with data property
+            if (item.data && typeof item.data === 'object') {
+              return {
+                id: item.data.id || item.id || 0,
+                task: item.data.task || '',
+                answer: item.data.answer || '',
+                type: 'sql-level-2' as const,
+              }
+            }
+            // If it's a direct SQLLogicItem
+            return {
+              id: item.id || 0,
+              task: item.task || '',
+              answer: item.answer || '',
+              type: 'sql-level-2' as const,
+            }
+          }).filter((item: SQLLogicItem) => item.id && item.task && item.answer)
+          
+          if (sqlItems.length > 0) {
+            console.log('Detected SQL Level 2 content, routing to level-2 page')
+            navigate('/level-2', { state: { gameData: sqlItems } })
+            return
+          }
+        }
+        
+        // Handle SQL Level 3
+        if (isSQLLevel3) {
+          // Extract SQL items - handle both GameContentItem format and direct format
+          const sqlItems: SQLLevelThreeItem[] = result.content.map((item: any) => {
+            // If it's a GameContentItem with data property
+            if (item.data && typeof item.data === 'object') {
+              return {
+                id: item.data.id || item.id || 0,
+                task: item.data.task || '',
+                answer: item.data.answer || '',
+                type: 'sql-level-3' as const,
+              }
+            }
+            // If it's a direct SQLLevelThreeItem
+            return {
+              id: item.id || 0,
+              task: item.task || '',
+              answer: item.answer || '',
+              type: 'sql-level-3' as const,
+            }
+          }).filter((item: SQLLevelThreeItem) => item.id && item.task && item.answer)
+          
+          if (sqlItems.length > 0) {
+            console.log('Detected SQL Level 3 content, routing to level-3 page')
+            navigate('/level-3', { state: { gameData: sqlItems } })
             return
           }
         }

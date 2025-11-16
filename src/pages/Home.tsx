@@ -23,7 +23,7 @@ export function Home() {
             <BookOpen className="h-12 w-12 text-primary" />
           </div>
           <h1 className="text-4xl font-bold text-gray-900 mb-2">
-            Student PDF Game App
+            StudyArena
           </h1>
           <p className="text-lg text-gray-600">
             Transform your PDFs into interactive learning experiences

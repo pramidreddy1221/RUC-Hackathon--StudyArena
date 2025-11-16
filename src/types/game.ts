@@ -25,11 +25,11 @@ export interface MiniQuiz {
   timeLimit?: number // in seconds
 }
 
-export type GameContentType = 'mcq' | 'flashcard' | 'fill-in-the-blank' | 'mini-quiz' | 'sql-level-1'
+export type GameContentType = 'mcq' | 'flashcard' | 'fill-in-the-blank' | 'mini-quiz' | 'sql-level-1' | 'sql-level-2' | 'sql-level-3'
 
 export interface GameContentItem {
   type: GameContentType
-  data: MCQ | Flashcard | FillInTheBlank | MiniQuiz | SQLFixItem
+  data: MCQ | Flashcard | FillInTheBlank | MiniQuiz | SQLFixItem | SQLLogicItem | SQLLevelThreeItem
 }
 
 export interface SQLFixItem {
@@ -37,5 +37,19 @@ export interface SQLFixItem {
   task: string
   answer: string
   type: 'sql-level-1'
+}
+
+export interface SQLLogicItem {
+  id: number
+  task: string
+  answer: string
+  type: 'sql-level-2'
+}
+
+export interface SQLLevelThreeItem {
+  id: number
+  task: string
+  answer: string
+  type: 'sql-level-3'
 }
 

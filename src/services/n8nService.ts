@@ -8,7 +8,7 @@ export interface N8NResponse {
 }
 
 // Update this URL with your n8n webhook URL
-const N8N_WEBHOOK_URL = import.meta.env.VITE_N8N_WEBHOOK_URL || 'http://localhost:5678/webhook/pdf-processor'
+const N8N_WEBHOOK_URL = import.meta.env.VITE_N8N_WEBHOOK_URL || 'https://ruchack.app.n8n.cloud/webhook/c3a31930-f466-4674-8cc7-460fccc05d7d'
 
 /**
  * Extracts JSON from a markdown code block
