@@ -78,7 +78,11 @@ export function LevelThreePage() {
       setIsLoading(true)
       await callNextLevelWebhook(3)
       // Navigate to home after completing level 3
-      navigate('/')
+      navigate("/complete", {
+        state: {
+          score: 100
+        }
+      });
     } catch (error) {
       console.error('Error calling next level webhook:', error)
       navigate('/')
